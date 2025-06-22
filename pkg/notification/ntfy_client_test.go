@@ -133,7 +133,7 @@ func TestNtfyClient_Send(t *testing.T) {
 			defer server.Close()
 
 			// Create client
-			client := NewNtfyClient(server.URL, "test-topic")
+			client := NewNtfyClient(server.URL, "test-topic", "")
 
 			// Send notification
 			err := client.Send(tt.notification)
@@ -151,7 +151,7 @@ func TestNtfyClient_Send(t *testing.T) {
 
 func TestNtfyClient_SendNetworkError(t *testing.T) {
 	// Use invalid URL to simulate network error
-	client := NewNtfyClient("http://localhost:0", "test-topic")
+	client := NewNtfyClient("http://localhost:0", "test-topic", "")
 
 	err := client.Send(Notification{
 		Title:   "Test",
@@ -165,7 +165,7 @@ func TestNtfyClient_SendNetworkError(t *testing.T) {
 
 func TestNtfyClient_SendInvalidURL(t *testing.T) {
 	// Use malformed URL
-	client := NewNtfyClient("://invalid-url", "test-topic")
+	client := NewNtfyClient("://invalid-url", "test-topic", "")
 
 	err := client.Send(Notification{
 		Title:   "Test",
@@ -225,7 +225,7 @@ func TestNtfyClient_MessageFormatting(t *testing.T) {
 			}))
 			defer server.Close()
 
-			client := NewNtfyClient(server.URL, "test-topic")
+			client := NewNtfyClient(server.URL, "test-topic", "")
 			_ = client.Send(tt.notification)
 
 			if capturedMessage != tt.wantMessage {
@@ -237,36 +237,96 @@ func TestNtfyClient_MessageFormatting(t *testing.T) {
 
 func TestNewNtfyClient(t *testing.T) {
 	tests := []struct {
-		name   string
-		server string
-		topic  string
+		name      string
+		server    string
+		topic     string
+		authToken string
 	}{
 		{
-			name:   "standard config",
-			server: "https://ntfy.sh",
-			topic:  "my-topic",
+			name:      "standard config",
+			server:    "https://ntfy.sh",
+			topic:     "my-topic",
+			authToken: "",
 		},
 		{
-			name:   "custom server",
-			server: "https://custom.example.com",
-			topic:  "alerts",
+			name:      "custom server",
+			server:    "https://custom.example.com",
+			topic:     "alerts",
+			authToken: "",
 		},
 		{
-			name:   "empty values",
-			server: "",
-			topic:  "",
+			name:      "empty values",
+			server:    "",
+			topic:     "",
+			authToken: "",
+		},
+		{
+			name:      "with auth token",
+			server:    "https://ntfy.sh",
+			topic:     "private-topic",
+			authToken: "tk_test123",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client := NewNtfyClient(tt.server, tt.topic)
+			client := NewNtfyClient(tt.server, tt.topic, tt.authToken)
 			if client == nil {
 				t.Error("NewNtfyClient() returned nil")
 			}
 
 			// Verify it implements Notifier interface
 			var _ Notifier = client
+		})
+	}
+}
+
+func TestNtfyClient_Authentication(t *testing.T) {
+	tests := []struct {
+		name       string
+		authToken  string
+		wantHeader string
+		expectAuth bool
+	}{
+		{
+			name:       "with bearer token",
+			authToken:  "tk_test123",
+			wantHeader: "Bearer tk_test123",
+			expectAuth: true,
+		},
+		{
+			name:       "empty token",
+			authToken:  "",
+			wantHeader: "",
+			expectAuth: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var capturedAuthHeader string
+			
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				capturedAuthHeader = r.Header.Get("Authorization")
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer server.Close()
+
+			client := NewNtfyClient(server.URL, "test-topic", tt.authToken)
+			_ = client.Send(Notification{
+				Title:   "Test",
+				Message: "Test message",
+			})
+
+			if tt.expectAuth {
+				if capturedAuthHeader != tt.wantHeader {
+					t.Errorf("Authorization header = %v, want %v", capturedAuthHeader, tt.wantHeader)
+				}
+			} else {
+				if capturedAuthHeader != "" {
+					t.Errorf("Expected no Authorization header, but got %v", capturedAuthHeader)
+				}
+			}
 		})
 	}
 }

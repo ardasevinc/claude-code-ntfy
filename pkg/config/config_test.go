@@ -32,6 +32,7 @@ func TestLoadFromEnv(t *testing.T) {
 	origClaudePath := os.Getenv("CLAUDE_NOTIFY_CLAUDE_PATH")
 	origDefaultArgs := os.Getenv("CLAUDE_NOTIFY_DEFAULT_ARGS")
 	origStartup := os.Getenv("CLAUDE_NOTIFY_STARTUP")
+	origAuthToken := os.Getenv("CLAUDE_NOTIFY_AUTH_TOKEN")
 	defer func() {
 		_ = os.Setenv("CLAUDE_NOTIFY_TOPIC", origTopic)
 		_ = os.Setenv("CLAUDE_NOTIFY_SERVER", origServer)
@@ -40,6 +41,7 @@ func TestLoadFromEnv(t *testing.T) {
 		_ = os.Setenv("CLAUDE_NOTIFY_CLAUDE_PATH", origClaudePath)
 		_ = os.Setenv("CLAUDE_NOTIFY_DEFAULT_ARGS", origDefaultArgs)
 		_ = os.Setenv("CLAUDE_NOTIFY_STARTUP", origStartup)
+		_ = os.Setenv("CLAUDE_NOTIFY_AUTH_TOKEN", origAuthToken)
 	}()
 
 	tests := []struct {
@@ -72,6 +74,18 @@ func TestLoadFromEnv(t *testing.T) {
 				}
 				if cfg.ClaudePath != "/usr/local/bin/claude" {
 					t.Errorf("expected ClaudePath to be /usr/local/bin/claude but got %s", cfg.ClaudePath)
+				}
+			},
+		},
+		{
+			name: "auth token loading",
+			envVars: map[string]string{
+				"CLAUDE_NOTIFY_TOPIC":      "test-topic",
+				"CLAUDE_NOTIFY_AUTH_TOKEN": "tk_secret123",
+			},
+			checkFunc: func(t *testing.T, cfg *Config) {
+				if cfg.NtfyAuthToken != "tk_secret123" {
+					t.Errorf("expected NtfyAuthToken to be tk_secret123 but got %s", cfg.NtfyAuthToken)
 				}
 			},
 		},
