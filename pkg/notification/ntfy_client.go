@@ -56,6 +56,11 @@ func (c *NtfyClient) Send(notification Notification) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
+	// Add authorization header if token is provided
+	if c.authToken != "" {
+		req.Header.Set("Authorization", "Bearer "+c.authToken)
+	}
+
 	// Send the request
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
