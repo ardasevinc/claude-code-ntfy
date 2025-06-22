@@ -12,6 +12,7 @@ import (
 type NtfyClient struct {
 	server     string
 	topic      string
+	authToken  string
 	httpClient *http.Client
 }
 
