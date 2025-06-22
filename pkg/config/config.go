@@ -154,6 +154,10 @@ func loadFromEnv(cfg *Config) error {
 		cfg.DefaultClaudeArgs = filteredArgs
 	}
 
+	if authToken := os.Getenv("CLAUDE_NOTIFY_AUTH_TOKEN"); authToken != "" {
+		cfg.NtfyAuthToken = authToken
+	}
+
 	return nil
 }
 
