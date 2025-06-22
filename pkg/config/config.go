@@ -13,8 +13,9 @@ import (
 // Config holds all configuration for claude-code-ntfy
 type Config struct {
 	// Notification settings
-	NtfyTopic  string `yaml:"ntfy_topic" env:"CLAUDE_NOTIFY_TOPIC"`
-	NtfyServer string `yaml:"ntfy_server" env:"CLAUDE_NOTIFY_SERVER"`
+	NtfyTopic     string `yaml:"ntfy_topic" env:"CLAUDE_NOTIFY_TOPIC"`
+	NtfyServer    string `yaml:"ntfy_server" env:"CLAUDE_NOTIFY_SERVER"`
+	NtfyAuthToken string `yaml:"ntfy_auth_token" env:"CLAUDE_NOTIFY_AUTH_TOKEN"`
 
 	// Behavior flags
 	Quiet             bool     `yaml:"quiet" env:"CLAUDE_NOTIFY_QUIET"`
