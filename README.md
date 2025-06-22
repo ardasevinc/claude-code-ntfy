@@ -142,6 +142,7 @@ Configure via environment variables:
 
 - `CLAUDE_NOTIFY_TOPIC` - Ntfy topic for notifications (required)
 - `CLAUDE_NOTIFY_SERVER` - Ntfy server URL (default: https://ntfy.sh)
+- `CLAUDE_NOTIFY_AUTH_TOKEN` - Bearer authentication token for private topics (optional)
 - `CLAUDE_NOTIFY_BACKSTOP_TIMEOUT` - Inactivity timeout (default: 30s)
 - `CLAUDE_NOTIFY_QUIET` - Disable notifications (true/false)
 - `CLAUDE_NOTIFY_CLAUDE_PATH` - Path to the real claude binary
@@ -151,10 +152,24 @@ Or use a config file at `~/.config/claude-code-ntfy/config.yaml`:
 ```yaml
 ntfy_topic: "my-claude-notifications"
 ntfy_server: "https://ntfy.sh"
+ntfy_auth_token: "tk_your_token_here"  # Optional, for private topics
 backstop_timeout: "30s"
 quiet: false
 claude_path: "/usr/local/bin/claude"
 ```
+
+### Authentication
+
+For private ntfy topics that require authentication:
+
+```bash
+# Via environment variable
+export CLAUDE_NOTIFY_AUTH_TOKEN="tk_your_token_here"
+
+# Or in config.yaml (see above)
+```
+
+**Security Note**: Store tokens securely and never commit them to version control. Consider using environment variables or secure secret management for production use.
 
 ## Development
 

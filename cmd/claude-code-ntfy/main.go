@@ -215,6 +215,7 @@ func printUsage() {
 	fmt.Println("Environment Variables:")
 	fmt.Println("  CLAUDE_NOTIFY_TOPIC       Ntfy topic for notifications")
 	fmt.Println("  CLAUDE_NOTIFY_SERVER      Ntfy server URL (default: https://ntfy.sh)")
+	fmt.Println("  CLAUDE_NOTIFY_AUTH_TOKEN  Bearer auth token for private topics")
 	fmt.Println("  CLAUDE_NOTIFY_BACKSTOP_TIMEOUT  Inactivity timeout (default: 30s)")
 	fmt.Println("  CLAUDE_NOTIFY_QUIET       Disable notifications (true/false)")
 	fmt.Println("  CLAUDE_NOTIFY_STARTUP     Send startup notification (default: true)")
