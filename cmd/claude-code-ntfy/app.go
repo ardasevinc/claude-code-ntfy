@@ -29,7 +29,7 @@ func NewDependencies(cfg *config.Config) (*Dependencies, error) {
 	}
 
 	// Create notification components
-	baseNotifier := notification.NewNtfyClient(cfg.NtfyServer, cfg.NtfyTopic)
+	baseNotifier := notification.NewNtfyClient(cfg.NtfyServer, cfg.NtfyTopic, cfg.NtfyAuthToken)
 
 	// Create output monitor with stdout notifier temporarily
 	outputMonitor := monitor.NewOutputMonitor(cfg, notification.NewStdoutNotifier())
