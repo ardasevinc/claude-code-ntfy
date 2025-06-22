@@ -16,11 +16,12 @@ type NtfyClient struct {
 	httpClient *http.Client
 }
 
-// NewNtfyClient creates a new ntfy.sh client
-func NewNtfyClient(server, topic string) *NtfyClient {
+// NewNtfyClient creates a new ntfy.sh client with optional bearer authentication
+func NewNtfyClient(server, topic, authToken string) *NtfyClient {
 	return &NtfyClient{
-		server: server,
-		topic:  topic,
+		server:    server,
+		topic:     topic,
+		authToken: authToken,
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
 		},
